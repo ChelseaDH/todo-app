@@ -1,0 +1,225 @@
+.app {
+  --darkest: rgb(58,44,65);
+  --darkest-opaque: rgba(58,44,65,0.5);
+  --light: rgb(228,205,212);
+  --list-even: rgb(202,158,184);
+  --list-odd: rgb(126,88,129);
+  --text-light: rgb(255,255,255);
+  --text-dark: rgb(51,51,51);
+  --border: rgb(187,193,225);
+
+  --spacing: 15px;
+  --content-width: 80%;
+
+  color: var(--text-dark);
+  font-family: "Barlow Condensed", sans-serif;
+  height: 100%;
+}
+
+.header {
+  background-color: var(--darkest);
+  color: var(--text-light);
+  padding: 3px;
+  text-align: center;
+  font-size: x-large;
+}
+
+.todosContainer {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 10px;
+  box-sizing: border-box;
+  border-top: var(--spacing);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: space-between;
+  gap: var(--spacing);
+}
+
+.todoForm {
+  /*height: 75px;*/
+  width: var(--content-width);
+
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  color: var(--darkest);
+}
+
+input.newTodoInput, input.addTodoBtn {
+  border: 1px solid var(--darkest-opaque);
+  font-size: 16px;
+  padding: 10px;
+}
+
+input.newTodoInput {
+  border-radius: 10px 0 0 10px;
+  border-right: 0;
+  width: 75%;
+}
+
+input.addTodoBtn {
+  color: var(--text-dark);
+  text-align: center;
+  cursor: pointer;
+  transition: 0.3s;
+  border-radius: 0 10px 10px 0;
+  width: 25%;
+}
+
+input.addTodoBtn:hover {
+  background-color: var(--darkest);
+  color: var(--text-light);
+}
+
+.todoList {
+  border-radius: 10px;
+  padding: 5px;
+  width: var(--content-width);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.todo {
+  background: var(--list-odd);
+  color: var(--text-light);
+
+  border-radius: 10px;
+  box-shadow: 1px 1px 1px var(--darkest-opaque);
+  transition: box-shadow 0.1s;
+  font-size: medium;
+  text-align: left;
+  margin-bottom: 6px;
+  padding: 0.5em;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.todo:hover {
+  box-shadow: 1px 1px 3px var(--darkest-opaque);
+}
+
+.todo:nth-child(even) {
+  background-color: var(--list-even);
+}
+
+.todoText {
+  padding-left: 10px;
+  flex-grow: 2;
+}
+
+.removeButton {
+  display: block;
+  color: var(--text-light);
+  text-align: center;
+  font-family: sans-serif;
+  padding-left: 0.4em;
+  margin-top: 1px;
+}
+
+@supports (-webkit-appearance: none) or (-moz-appearance: none) {
+  input[type=checkbox]{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    min-width: 1.2em;
+    height: 1.2em;
+    display: inline-block;
+    vertical-align: top;
+    position: relative;
+    margin: 0;
+    cursor: pointer;
+    border: 1px solid var(--bc, var(--border));
+    border-radius: 0.4em;
+    background: var(--b, var(--text-light));
+    transition: background 0.3s, border-color 0.3s, box-shadow 0.2s;
+    font-size: medium;
+  }
+  input[type=checkbox]:after {
+    content: "";
+    display: block;
+    position: absolute;
+    transition: transform var(--d-t, 0.3s) var(--d-t-e, ease), opacity var(--d-o, 0.2s);
+    opacity: var(--o, 0);
+
+    width: 25%;
+    height: 50%;
+    border: 2px solid var(--text-dark);
+    border-top: 0;
+    border-left: 0;
+    left: 35%;
+    top: 14%;
+    transform: rotate(var(--r, 20deg));
+  }
+  input[type=checkbox]:checked {
+    --b: var(--text-light);
+    --bc: var(--text-light);
+    --d-o: .3s;
+    --d-t: .6s;
+    --d-t-e: cubic-bezier(.2, .85, .32, 1.2);
+    --r: 43deg;
+    --o: 1;
+  }
+  input[type=checkbox]:hover:not(:checked) {
+    --bc: var(--darkest);
+  }
+  input[type=checkbox]:focus {
+    box-shadow: 0 0 0 var(--darkest);
+  }
+  input[type=checkbox] + label{
+    font-size: 14px;
+    line-height: 21px;
+    display: inline-block;
+    vertical-align: top;
+    cursor: pointer;
+    margin-left: 4px;
+  }
+}
+
+.todoActionBox {
+  width: var(--content-width);
+  border: 2px solid var(--darkest);
+  border-radius: 10px;
+  box-sizing: border-box;
+  padding: 5px 8px;
+
+  justify-self: flex-end;
+
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.todoActionBox h1 {
+  color: var(--darkest);
+  font-size: x-large;
+  margin: 5px;
+  text-align: center;
+}
+
+.todoActions, .filters {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 5px;
+}
+
+.actionButton {
+  background-color: var(--light);
+  color: var(--text-dark);
+  border: 2px var(--border);
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.todoActionBox p {
+  text-align: center;
+  margin: 0;
+}
