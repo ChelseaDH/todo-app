@@ -203,11 +203,11 @@ const App = () => {
   };
 
   const markAllAsComplete = (): void => {
-      const newTodos = [...todos];
-      newTodos.forEach(todo => {
-          todo.isCompleted = true;
-      })
-      setTodos(newTodos);
+      setTodos(todos.map((todo: Todo) => {
+          const newTodo = todo;
+          newTodo.isCompleted = true;
+          return newTodo;
+      }));
 
       setRemainingTodos(0);
   };
