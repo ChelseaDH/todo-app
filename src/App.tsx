@@ -71,7 +71,7 @@ const TodoForm = (props: todoFormProps) => {
 }
 
 type TodoActionsProps = {
-    markAllAsComplete: () => void
+    toggleCompleteOnAll: (completed: boolean) => void
     removeAllCompleted: () => void
 }
 
@@ -81,9 +81,15 @@ const TodoActions = (props: TodoActionsProps) => {
             <h1>Actions</h1>
             <button
                 className={styles.actionButton}
-                onClick={props.markAllAsComplete}
+                onClick={() => props.toggleCompleteOnAll(true)}
             >
                 Mark all complete
+            </button>
+            <button
+                className={styles.actionButton}
+                onClick={() => props.toggleCompleteOnAll(false)}
+            >
+                Mark all active
             </button>
             <button
                 className={styles.actionButton}
@@ -147,7 +153,7 @@ const Filters = (props: FiltersProps) => {
 };
 
 type TodoActionBoxProps = {
-    markAllAsComplete: () => void
+    toggleCompleteOnAll: (completed: boolean) => void
     removeAllCompleted: () => void
     remainingTodos: number
     applyFilter: Function
@@ -157,7 +163,7 @@ const TodoActionBox = (props: TodoActionBoxProps) => {
     return (
         <div className={styles.todoActionBox}>
             <TodoActions
-                markAllAsComplete={props.markAllAsComplete}
+                toggleCompleteOnAll={props.toggleCompleteOnAll}
                 removeAllCompleted={props.removeAllCompleted}
             />
             <Filters
@@ -202,14 +208,14 @@ const App = () => {
       )
   };
 
-  const markAllAsComplete = (): void => {
+  const toggleCompleteOnAll = (completed: boolean): void => {
       setTodos(todos.map((todo: Todo) => {
           const newTodo = todo;
-          newTodo.isCompleted = true;
+          newTodo.isCompleted = completed;
           return newTodo;
       }));
 
-      setRemainingTodos(0);
+      setRemainingTodos(completed ? 0 : todos.length);
   };
 
   const removeTodo = (index: number): void => {
@@ -261,7 +267,7 @@ const App = () => {
               ))}
           </div>
           <TodoActionBox
-              markAllAsComplete={markAllAsComplete}
+              toggleCompleteOnAll={toggleCompleteOnAll}
               removeAllCompleted={removeAllCompleted}
               applyFilter={setFilter}
               remainingTodos={remainingTodos}
