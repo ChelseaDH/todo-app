@@ -1,38 +1,54 @@
-import React from 'react';
+import * as React from 'react';
 import styles from './App.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faTimes} from '@fortawesome/free-solid-svg-icons'
 
-const Todo = ({ todo, index, completeTodo, removeTodo }) => {
-  const completed = todo.isCompleted;
+interface Todo {
+    text: string,
+    isCompleted: boolean,
+}
+
+type todoElementProps = {
+    todo: Todo,
+    index: number,
+    completeTodo: (index: number, completed: boolean) => void,
+    removeTodo: (index: number) => void,
+}
+
+const TodoElement = (props: todoElementProps): JSX.Element => {
+  const completed = props.todo.isCompleted;
   return (
       <div
           className={styles.todo}
       >
           <input
               type="checkbox"
-              onClick={() => completeTodo(index, !completed)}
+              onClick={() => props.completeTodo(props.index, !completed)}
               checked={completed}
           />
           <div
               className={styles.todoText}
               style={{ textDecoration: completed ? "line-through" : ""}}
-          >{todo.text}</div>
+          >{props.todo.text}</div>
           <div
               className={styles.removeButton}
-              onClick={() => removeTodo(index)}
+              onClick={() => props.removeTodo(props.index)}
           ><FontAwesomeIcon icon={faTimes}/></div>
       </div>
   );
 }
 
-const TodoForm = ({ addTodo }) => {
+type todoFormProps = {
+    addTodo: (text: string) => void,
+}
+
+const TodoForm = (props: todoFormProps) => {
     const [todoText, setTodoText] = React.useState("");
 
-    const handleSubmit = e => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!todoText) return;
-        addTodo(todoText);
+        props.addTodo(todoText);
         setTodoText("");
     };
 
@@ -54,19 +70,24 @@ const TodoForm = ({ addTodo }) => {
     );
 }
 
-const TodoActions = ({markAllAsComplete, removeAllCompleted}) => {
+type TodoActionsProps = {
+    markAllAsComplete: () => void
+    removeAllCompleted: () => void
+}
+
+const TodoActions = (props: TodoActionsProps) => {
     return (
         <div className={styles.todoActions}>
             <h1>Actions</h1>
             <button
                 className={styles.actionButton}
-                onClick={markAllAsComplete}
+                onClick={props.markAllAsComplete}
             >
                 Mark all complete
             </button>
             <button
                 className={styles.actionButton}
-                onClick={removeAllCompleted}
+                onClick={props.removeAllCompleted}
             >
                 Remove all completed
             </button>
@@ -74,42 +95,50 @@ const TodoActions = ({markAllAsComplete, removeAllCompleted}) => {
     )
 }
 
-const RemainingTodos = ({remainingTodos}) => {
+type RemainingTodosProps = {
+    remainingTodos: number
+}
+
+const RemainingTodos = (props: RemainingTodosProps) => {
     return (
         <div>
             <h1>Remaining</h1>
             <p>
-                {remainingTodos} item{remainingTodos === 1 ? '' : 's'}
+                {props.remainingTodos} item{props.remainingTodos === 1 ? '' : 's'}
             </p>
         </div>
     )
 }
 
-const filters = {
-    ALL: 'all',
-    INCOMPLETE: 'incomplete',
-    COMPLETED: 'completed'
+enum filters {
+    ALL = 'all',
+    INCOMPLETE = 'incomplete',
+    COMPLETED = 'completed'
 }
 
-const Filters = ({applyFilter}) => {
+type FiltersProps = {
+    applyFilter: Function,
+}
+
+const Filters = (props: FiltersProps) => {
     return (
         <div className={styles.filters}>
             <h1>Filter</h1>
             <button
                 className={styles.actionButton}
-                onClick={() => applyFilter(filters.ALL)}
+                onClick={() => props.applyFilter(filters.ALL)}
             >
                 All
             </button>
             <button
                 className={styles.actionButton}
-                onClick={() => applyFilter(filters.INCOMPLETE)}
+                onClick={() => props.applyFilter(filters.INCOMPLETE)}
             >
                 Active
             </button>
             <button
                 className={styles.actionButton}
-                onClick={() => applyFilter(filters.COMPLETED)}
+                onClick={() => props.applyFilter(filters.COMPLETED)}
             >
                 Completed
             </button>
@@ -117,29 +146,36 @@ const Filters = ({applyFilter}) => {
     )
 };
 
-const TodoActionBox = ({markAllAsComplete, remainingTodos, removeAllCompleted, applyFilter}) => {
+type TodoActionBoxProps = {
+    markAllAsComplete: () => void
+    removeAllCompleted: () => void
+    remainingTodos: number
+    applyFilter: Function
+}
+
+const TodoActionBox = (props: TodoActionBoxProps) => {
     return (
         <div className={styles.todoActionBox}>
             <TodoActions
-                markAllAsComplete={markAllAsComplete}
-                removeAllCompleted={removeAllCompleted}
+                markAllAsComplete={props.markAllAsComplete}
+                removeAllCompleted={props.removeAllCompleted}
             />
             <Filters
-                applyFilter={applyFilter}
+                applyFilter={props.applyFilter}
             />
-            <RemainingTodos remainingTodos={remainingTodos} />
+            <RemainingTodos remainingTodos={props.remainingTodos} />
         </div>
     )
 }
 
 const App = () => {
   const [todos, setTodos] = React.useState(
-      JSON.parse(localStorage.getItem('todos')) || []
+      JSON.parse(localStorage.getItem('todos') as string) ?? []
   );
 
   const [remainingTodos, setRemainingTodos] = React.useState(() => {
       let count = 0;
-      todos.forEach(todo => {
+      todos.forEach((todo: Todo) => {
           if (!todo.isCompleted) {
               count++;
           }
@@ -149,18 +185,18 @@ const App = () => {
 
   const [filter, setFilter] = React.useState(filters.ALL);
 
-  React.useEffect(() => {
+  React.useEffect((): void => {
       localStorage.setItem('todos', JSON.stringify(todos));
   }, [todos]);
 
-  const addTodo = text => {
+  const addTodo = (text: string): void => {
       const newTodos = [...todos, {text: text, isCompleted: false}];
       setTodos(newTodos);
 
       setRemainingTodos(remainingTodos + 1);
   };
 
-  const toggleComplete = (index, completed) => {
+  const toggleComplete = (index: number, completed: boolean): void => {
       const newTodos = [...todos];
       newTodos[index].isCompleted = completed;
       setTodos(newTodos);
@@ -170,7 +206,7 @@ const App = () => {
       )
   };
 
-  const markAllAsComplete = () => {
+  const markAllAsComplete = (): void => {
       const newTodos = [...todos];
       newTodos.forEach(todo => {
           todo.isCompleted = true;
@@ -180,7 +216,7 @@ const App = () => {
       setRemainingTodos(0);
   };
 
-  const removeTodo = index => {
+  const removeTodo = (index: number): void => {
       const newTodos = [...todos];
 
       if (!newTodos[index].isCompleted) {
@@ -191,7 +227,7 @@ const App = () => {
       setTodos(newTodos);
   }
 
-  const removeAllCompleted = () => {
+  const removeAllCompleted = (): void => {
       const newTodos = [...todos].filter((todo) => {
           return !todo.isCompleted;
       })
@@ -201,10 +237,10 @@ const App = () => {
   let filteredList = [];
   switch (filter) {
       case filters.INCOMPLETE:
-          filteredList = todos.filter(todo => !todo.isCompleted);
+          filteredList = todos.filter((todo: Todo) => !todo.isCompleted);
           break;
       case filters.COMPLETED:
-          filteredList = todos.filter(todo => todo.isCompleted);
+          filteredList = todos.filter((todo: Todo) => todo.isCompleted);
           break;
       default:
           filteredList = todos;
@@ -218,8 +254,8 @@ const App = () => {
       <div className={styles.todosContainer}>
           <TodoForm addTodo={addTodo} />
           <div className={styles.todoList}>
-            {filteredList.map((todo, index) => (
-                <Todo
+            {filteredList.map((todo: Todo, index: number): JSX.Element => (
+                <TodoElement
                   key={index}
                   index={index}
                   todo={todo}
