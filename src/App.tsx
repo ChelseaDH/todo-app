@@ -110,7 +110,7 @@ const RemainingTodos = (props: RemainingTodosProps) => {
     )
 }
 
-enum filters {
+enum Filter {
     ALL = 'all',
     INCOMPLETE = 'incomplete',
     COMPLETED = 'completed'
@@ -126,19 +126,19 @@ const Filters = (props: FiltersProps) => {
             <h1>Filter</h1>
             <button
                 className={styles.actionButton}
-                onClick={() => props.applyFilter(filters.ALL)}
+                onClick={() => props.applyFilter(Filter.ALL)}
             >
                 All
             </button>
             <button
                 className={styles.actionButton}
-                onClick={() => props.applyFilter(filters.INCOMPLETE)}
+                onClick={() => props.applyFilter(Filter.INCOMPLETE)}
             >
                 Active
             </button>
             <button
                 className={styles.actionButton}
-                onClick={() => props.applyFilter(filters.COMPLETED)}
+                onClick={() => props.applyFilter(Filter.COMPLETED)}
             >
                 Completed
             </button>
@@ -183,11 +183,7 @@ const App = () => {
       return count;
   });
 
-  const [filter, setFilter] = React.useState(filters.ALL);
-
-  React.useEffect((): void => {
-      localStorage.setItem('todos', JSON.stringify(todos));
-  }, [todos]);
+  const [filter, setFilter] = React.useState(Filter.ALL);
 
   const addTodo = (text: string): void => {
       const newTodos = [...todos, {text: text, isCompleted: false}];
@@ -234,17 +230,17 @@ const App = () => {
       setTodos(newTodos);
   }
 
-  let filteredList = [];
-  switch (filter) {
-      case filters.INCOMPLETE:
-          filteredList = todos.filter((todo: Todo) => !todo.isCompleted);
-          break;
-      case filters.COMPLETED:
-          filteredList = todos.filter((todo: Todo) => todo.isCompleted);
-          break;
-      default:
-          filteredList = todos;
+  const filterTodos = (filter: Filter): Todo[] => {
+      switch (filter) {
+          case Filter.INCOMPLETE:
+              return todos.filter((todo: Todo) => !todo.isCompleted);
+          case Filter.COMPLETED:
+              return todos.filter((todo: Todo) => todo.isCompleted);
+          default:
+              return todos;
+      }
   }
+  let filteredList: Todo[] = filterTodos(filter);
 
   return (
     <div className={styles.app}>
