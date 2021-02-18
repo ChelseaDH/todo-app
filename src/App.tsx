@@ -179,33 +179,21 @@ const App = () => {
       JSON.parse(localStorage.getItem('todos') as string) ?? []
   );
 
-  const [remainingTodos, setRemainingTodos] = React.useState(() => {
-      let count = 0;
-      todos.forEach((todo: Todo) => {
-          if (!todo.isCompleted) {
-              count++;
-          }
-      })
-      return count;
-  });
+  React.useEffect((): void => {
+     localStorage.setItem('todos', JSON.stringify(todos));
+  }, [todos]);
 
   const [filter, setFilter] = React.useState(Filter.ALL);
 
   const addTodo = (text: string): void => {
       const newTodos = [...todos, {text: text, isCompleted: false}];
       setTodos(newTodos);
-
-      setRemainingTodos(remainingTodos + 1);
   };
 
   const toggleComplete = (index: number, completed: boolean): void => {
       const newTodos = [...todos];
       newTodos[index].isCompleted = completed;
       setTodos(newTodos);
-
-      setRemainingTodos(
-          completed ? remainingTodos - 1 : remainingTodos + 1
-      )
   };
 
   const toggleCompleteOnAll = (completed: boolean): void => {
@@ -214,17 +202,10 @@ const App = () => {
           newTodo.isCompleted = completed;
           return newTodo;
       }));
-
-      setRemainingTodos(completed ? 0 : todos.length);
   };
 
   const removeTodo = (index: number): void => {
       const newTodos = [...todos];
-
-      if (!newTodos[index].isCompleted) {
-          setRemainingTodos(remainingTodos - 1);
-      }
-
       newTodos.splice(index, 1);
       setTodos(newTodos);
   }
@@ -247,6 +228,8 @@ const App = () => {
       }
   }
   let filteredList: Todo[] = filterTodos(filter);
+
+  const remainingTodos = todos.reduce((count: number, todo: Todo) => (!todo.isCompleted ? count + 1 : count), 0);
 
   return (
     <div className={styles.app}>
