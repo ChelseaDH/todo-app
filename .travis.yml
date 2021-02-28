@@ -1,4 +1,7 @@
-sudo: required
+sudo: true
+language: node_js
+node_js:
+  - 12
 services:
   - docker
 
@@ -7,3 +10,15 @@ before_install:
 
 script:
   - docker run -e CI=true chelseadh/todo-app yarn test -- --coverage
+
+deploy:
+  provider: elasticbeanstalk
+  region: "us-east-2"
+  app: "todo-app"
+  env: "Todoapp-env"
+  bucket_name: "elasticbeanstalk-us-east-2-141953963913"
+  bucket_path: "todo-app"
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
